@@ -1,43 +1,42 @@
 # Pill Dispenser Robot
 
-Medication adherence is critical, especially for elderly or chronically ill patients. To help patients take the correct medicines at the prescribed times, this project provides an **automatic pill‑dispensing robot** with biometric verification and basic health monitoring.
+This repository contains an open-source medication dispensing robot. The project aims to help elderly or chronically ill patients adhere to medication schedules by automating the process of identifying the user, aligning a mechanical arm and dispensing a single pill at the right time. A Raspberry Pi performs face and mouth detection using OpenCV, while an Arduino controls servos to move the arm and rotate the pill disk.
 
 ## Features
 
-- **Scheduled dispensing:** Uses a real‑time clock to dispense medicines at preset times. Three compartments correspond to morning, afternoon and night doses.
-- **Rotating disk mechanism:** A stepper motor rotates a disk with precisely sized holes to release one pill at a time. Interchangeable disks support different pill sizes【635291607221944†L618-L624】.
-- **Hand detection:** An ultrasonic sensor detects when a hand is present before dispensing【635291607221944†L595-L603】.
-- **Biometric verification:** A fingerprint sensor (R307) verifies the user to prevent unauthorized access【635291607221944†L629-L637】.
-- **Health monitoring:** Heart rate & oxygen saturation sensor (MAX30102), temperature sensor (DS18B20), and other sensors monitor basic vital signs【635291607221944†L629-L637】.
-- **Notifications:** A SIM800L GSM module sends reminder messages to patients and caregivers【635291607221944†L603-L640】.
-- **User interface:** Touchscreen or buttons allow users to set schedules, add/remove medicines and view health data【635291607221944†L603-L640】.
+- **Biometric verification:** A fingerprint sensor verifies authorised users and prevents misuse【635291607221944†L595-L640】.
+- **Face & mouth detection:** A USB camera and OpenCV Haar Cascades detect the user’s face and mouth in real-time; coordinates are sent over UART to an Arduino【635291607221944†L595-L640】.
+- **Motorised pill dispenser:** A servo-driven disk with precision holes releases exactly one pill per dose; interchangeable disks support different tablet sizes【635291607221944†L618-L624】.
+- **Health monitoring:** Sensors (MAX30102 for heart rate and oxygen saturation, DS18B20 for temperature) collect vital signs and can notify caregivers【635291607221944†L595-L640】.
+- **Notifications:** A SIM800L GSM module (or future MQTT/web integration) sends reminders and status updates【266709376490988†L1198-L1251】.
+- **Modular design:** Separate modules for camera & processing, motion control, dispensing mechanism, sensors and communications make the system extensible.
 
-## System Architecture
+## Repository structure
 
-The system is built around a **Raspberry Pi** microcontroller that controls stepper motors, reads sensor data and manages the schedule. Major components include:
+| Path | Purpose |
+| --- | --- |
+| `main.py` | Entry point script controlling scheduling, camera capture and serial communication |
+| `pill_dispenser_robot_report.md` | Detailed report of the project design, hardware & software architecture, challenges and improvements |
+| `.gitignore` | Excludes dependencies and temporary files |
+| `LICENSE` | MIT license |
 
-| Module | Description |
-|-------|-------------|
-| **Pill dispenser** | A rotating disk driven by a stepper motor. Holes sized according to pill dimensions ensure one pill per rotation【635291607221944†L618-L624】. |
-| **Sensors** | Ultrasonic sensor HC‑SR04 for hand detection; fingerprint sensor R307; MAX30102 for heart rate/SpO₂; DS18B20 for temperature【635291607221944†L595-L637】. |
-| **Controller & software** | Raspberry Pi running Python scripts handles scheduling, sensor fusion and motor control【635291607221944†L629-L640】. |
-| **Communications** | SIM800L GSM/GPRS module for SMS notifications; optional Wi‑Fi for integration with a smartphone app. |
-| **Power & enclosure** | 5 V 5 A power supply; stepper motor drivers (e.g., L293D) and a compact housing for the compartments and electronics. |
+## Getting started
 
-## Getting Started
+1. Clone this repository and install Python dependencies (OpenCV, numpy, pyserial) via `pip`.
+2. Connect the Raspberry Pi camera or USB webcam, Arduino board, servos and sensors as described in the [detailed report](pill_dispenser_robot_report.md).
+3. Configure the medication schedule by editing the list of `schedule_times` in `main.py`.
+4. Run `python3 main.py` to start the system. The Raspberry Pi will detect faces/mouths, send coordinates to the Arduino and dispense pills accordingly.
+5. To customise notifications or add a smartphone app, see the improvements section below.
 
-1. **Hardware assembly:** Connect the stepper motor to the disk, mount sensors on the housing and wire them to the Raspberry Pi. Use driver ICs (e.g., L293D) to power the motors【635291607221944†L650-L653】.
-2. **Install dependencies:** Flash Raspberry Pi OS, enable SPI/I2C/UART interfaces, and install Python libraries such as `RPi.GPIO`, `pyserial` and sensor drivers.
-3. **Configure schedule:** Edit the `schedule.json` file (to be created) to set dispensing times and compartments.
-4. **Run the script:** Execute `python3 main.py` to start the dispenser. The program monitors the clock, verifies users and dispenses pills when scheduled.
-5. **Receive alerts:** Register caregiver phone numbers to receive SMS notifications for missed doses or abnormal vital signs.
+## Future improvements
 
-## Future Improvements
-
-- Add a web or mobile app for remote schedule management and data visualization.
-- Integrate machine learning to detect compliance patterns and provide personalized reminders.
-- Design a more compact, modular enclosure for easier maintenance and refilling.
+- Replace Haar Cascades with a deep-learning model (e.g., MTCNN) for more robust face detection【635291607221944†L595-L640】.
+- Add ultrasonic or laser distance sensors to refine arm positioning.
+- Improve the pill disk and chute design to prevent jams.
+- Integrate mobile/web apps and cloud storage using MQTT or REST API【266709376490988†L1198-L1251】.
+- Add error indicators (LEDs/buzzers) and better cable management for reliability.
+- Implement closed-loop control for mecanum wheels for autonomous navigation.
 
 ## References
 
-This project design is inspired by research on smart medical boxes and automatic pill dispensers. For example, a study described a system using stepper motors to operate compartments, ultrasonic and biometric sensors for user detection, and health monitoring sensors connected to a Raspberry Pi【635291607221944†L595-L640】.
+For a comprehensive description of the system, including motivation, hardware components, software architecture, debugging process and lessons learned, see the [project report](pill_dispenser_robot_report.md).
